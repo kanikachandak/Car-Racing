@@ -1,40 +1,37 @@
-var ball, database, position;
+var database, form, gamestate=0, player, game, playerCount=0, allPlayers;
+var car1, car2, car3, car4, cars;
+var c1Img, c2Img, c3Img, c4Img, trackImg;
+
+function preload()
+{
+    c1Img = loadImage("Images/car1.png");
+    c2Img = loadImage("Images/car2.png");
+    c3Img = loadImage("Images/car3.png");
+    c4Img = loadImage("Images/car4.png");
+    trackImg = loadImage("Images/track.png");
+}
 
 function setup(){
-    createCanvas(500,500);
+    createCanvas(displayWidth,displayHeight);
     database=firebase.database();
-    ball = createSprite(250,250,10,10);
-    ball.shapeColor = "red";
-    var ballPosition = database.ref('ball/position');
-    ballPosition.on('value', readPosition);
+    game = new Game();
+    game.getState();
+    game.start();
 }
 
 function draw(){
     background("white");
-    if(keyDown(LEFT_ARROW)){
-        changePosition(-1,0);
+    if(playerCount==4)
+    {
+        game.update(1);
     }
-    else if(keyDown(RIGHT_ARROW)){
-        changePosition(1,0);
+    if(gamestate==1)
+    {
+        clear();    
+        game.play();
     }
-    else if(keyDown(UP_ARROW)){
-        changePosition(0,-1);
+    if(gamestate==2)
+    {
+        game.end();
     }
-    else if(keyDown(DOWN_ARROW)){
-        changePosition(0,+1);
-    }
-    drawSprites();
-}
-
-function changePosition(x,y){
-    database.ref('ball/position').set({
-        'x': position.x+x,
-        'y': position.y+y
-    });
-}
-function readPosition(data)
-{
-    position = data.val();
-    ball.x=position.x;
-    ball.y=position.y;
 }
